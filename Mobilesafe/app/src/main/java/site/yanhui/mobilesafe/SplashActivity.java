@@ -100,7 +100,16 @@ public class SplashActivity extends AppCompatActivity {
 
             }
         });
-        alertDialog.setCancelable(false);//不能被取消
+//        alertDialog.setCancelable(false);//不能被取消
+
+        //弹出软件升级界面 点击back按钮同样能进入主界面
+        alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                enterHome();
+                dialog.dismiss();
+            }
+        });
         alertDialog.show();
 
     }
