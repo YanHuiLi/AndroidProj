@@ -4,6 +4,7 @@ package site.yanhui.mobilesafe.gson;
  * Created by Archer on 2017/9/16.
  * <p>
  * 功能描述：
+ * GsonBean，用来传入更新的基本信息。Json实体类
  */
 
 public class Update {
@@ -13,7 +14,6 @@ public class Update {
      * versionDes : 2.0版本发布了，狂拽酷炫吊炸天
      * downloadUrl : http://yanhui.site
      */
-
     private String versionName;
     private String versionCode;
     private String versionDes;

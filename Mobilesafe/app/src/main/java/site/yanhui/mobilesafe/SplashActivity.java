@@ -133,10 +133,10 @@ public class SplashActivity extends AppCompatActivity {
          区别：1.在oncreate里面隐藏的话，下一个Activity里，同样存在
                2.在manifest中隐藏的话，所有的anctivity中都不可见，因为是在根节点隐藏
          */
-//        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-//        if(actionBar!=null){
-//            actionBar.hide();
-//        }
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        if(actionBar!=null){
+            actionBar.hide();
+        }
 
         initUI();
         initData();
@@ -169,56 +169,54 @@ public class SplashActivity extends AppCompatActivity {
      * 检测版本号
      */
     private void checkVersion() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final long startTime = System.currentTimeMillis();
-                final Message message = Message.obtain();
-                String address = "http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json";
+
+                //进行耗时操作必须开启一个新的子线程，不然会造成ANR异常
+                final long startTime = System.currentTimeMillis(); //开始的时间戳
+                final Message message = Message.obtain(); //初始化message对象
+                String address = "http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json";//版本更新的json数据
                 HttpUtils.sendOkHttpRequest(address, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                //切换回主线程弹出toast
                                 ToastUtils.showShort(SplashActivity.this, "更新数据失败，请检查网络");
                             }
                         });
 
-                        message.what = ENTER_HOME;
+                        message.what = ENTER_HOME;//赋值给message.what
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(2000);//睡两秒再发送消息体验好很多
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
-                        mHandler.sendMessage(message);
+                        mHandler.sendMessage(message);//发送消息
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        String jsonResponseText = response.body().string();
+                        String jsonResponseText = response.body().string();//将返回的response对象转化成String
                         Log.d(TAG, "onResponse: " + jsonResponseText);
-                        int versionCloudCode = parseJsonObject(jsonResponseText);//解析json
-                        if (mVersionCode < versionCloudCode) {
-                            message.what = UPDATE_VERSION;
+                        int versionCloudCode = parseJsonObject(jsonResponseText);//解析json返回服务器上最新版本值
+                        if (mVersionCode < versionCloudCode) {//本地的小于服务器的
+                            message.what = UPDATE_VERSION;  //给message一个消息，更新版本
                         } else {
-                            message.what = ENTER_HOME;
+                            message.what = ENTER_HOME;  //进入主页面
                         }
                         long endtime = System.currentTimeMillis();
-                        if (endtime - startTime < 4000) {
+                        if (endtime - startTime < 4000) { //保证执行4s，体验好
                             try {
                                 Thread.sleep(4000 - (endtime - startTime));
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
-                        mHandler.sendMessage(message);
+                        mHandler.sendMessage(message);//发送消息
                     }
                 });
             }
-        }).start();
 
-    }
 
     /**
      * 解析拿到的jsonObject对象
@@ -239,11 +237,11 @@ public class SplashActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 获取版本号
-     *
-     * @return 应用版本名称 返回0 代表有异常
-     */
+        /**
+         * 获取版本号
+         *
+         * @return 应用版本名称 返回0 代表有异常
+         */
     private int getVersionCode() {
         //1.包管理者对象PackageManager
         PackageManager manager = getPackageManager();
@@ -262,10 +260,12 @@ public class SplashActivity extends AppCompatActivity {
      * @return 应用版本名称 返回null 代表有异常
      */
     private String getVersionName() {
-        //1.包管理者对象PackageManager
+        //1.得到包管理者对象PackageManager
         PackageManager manager = getPackageManager();
         try {
+            //2.传入app的包名和flag（值为0），得到当前包的基本信息
             PackageInfo packageInfo = manager.getPackageInfo(this.getPackageName(), 0);
+            //返回包的versionName，即是Module:app里面的versionName
             return packageInfo.versionName;
         } catch (Exception e) {
             e.printStackTrace();
