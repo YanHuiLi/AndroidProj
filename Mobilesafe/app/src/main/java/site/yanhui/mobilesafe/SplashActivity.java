@@ -1,16 +1,19 @@
 package site.yanhui.mobilesafe;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -50,15 +53,14 @@ public class SplashActivity extends AppCompatActivity {
     private int mVersionCode;
 
 
-
-    private Handler mHandler=new Handler(){
+    private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_VERSION:
                     showUpdateDialog();
                     break;
-                case  ENTER_HOME:
+                case ENTER_HOME:
                     enterHome();
             }
         }
@@ -82,14 +84,15 @@ public class SplashActivity extends AppCompatActivity {
      */
     private void showUpdateDialog() {
         //弹出对话框，是依赖于activity存在的
-        final AlertDialog.Builder alertDialog= new AlertDialog.Builder(this);
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setIcon(R.drawable.ic_launcher); //设置左上角图标
         alertDialog.setTitle("版本更新");
         alertDialog.setMessage(des);
         alertDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                  SplashActivityPermissionsDispatcher.downNewApkWithCheck(SplashActivity.this);
+                //申请权限
+                SplashActivityPermissionsDispatcher.downNewApkWithCheck(SplashActivity.this);
             }
         });
 
@@ -113,8 +116,6 @@ public class SplashActivity extends AppCompatActivity {
         alertDialog.show();
 
     }
-
-
 
 
     @Override
@@ -148,7 +149,7 @@ public class SplashActivity extends AppCompatActivity {
         //1.应用名称
         String versionName = getVersionName();
         //2.给textView赋值
-        tv_versionName.setText(versionName);
+        tv_versionName.setText("版本名称：" + versionName);
         //3.检测本地版本号和服务器版本号是否相同,不相同说明有新版本，后台更新
         mVersionCode = getVersionCode();
 //        4.获得服务端的版本号
@@ -161,31 +162,30 @@ public class SplashActivity extends AppCompatActivity {
 //        "versionCode":"2"
 //        "versionDes":"2.0版本发布了，狂拽酷炫吊炸天"
 //        "downloadUrl":"http://yanhui.site"（替换成下载地址）
-         checkVersion();
+        checkVersion();
     }
 
     /**
      * 检测版本号
-     *
      */
     private void checkVersion() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final long startTime = System.currentTimeMillis();
-                final Message message=Message.obtain();
-                String address="http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json";
+                final Message message = Message.obtain();
+                String address = "http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json";
                 HttpUtils.sendOkHttpRequest(address, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtils.showShort(SplashActivity.this,"更新数据失败，请检查网络");
+                                ToastUtils.showShort(SplashActivity.this, "更新数据失败，请检查网络");
                             }
                         });
 
-                        message.what=ENTER_HOME;
+                        message.what = ENTER_HOME;
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException e1) {
@@ -197,24 +197,23 @@ public class SplashActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String jsonResponseText = response.body().string();
-                            Log.d(TAG, "onResponse: " + jsonResponseText);
-                            int versionCloudCode = parseJsonObject(jsonResponseText);//解析json
-                            if (mVersionCode < versionCloudCode) {
-                                message.what = UPDATE_VERSION;
-                            } else {
-                                message.what = ENTER_HOME;
-                            }
-                            long endtime = System.currentTimeMillis();
-                            if (endtime - startTime < 4000) {
-                                try {
-                                    Thread.sleep(4000 - (endtime - startTime));
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            mHandler.sendMessage(message);
+                        Log.d(TAG, "onResponse: " + jsonResponseText);
+                        int versionCloudCode = parseJsonObject(jsonResponseText);//解析json
+                        if (mVersionCode < versionCloudCode) {
+                            message.what = UPDATE_VERSION;
+                        } else {
+                            message.what = ENTER_HOME;
                         }
-
+                        long endtime = System.currentTimeMillis();
+                        if (endtime - startTime < 4000) {
+                            try {
+                                Thread.sleep(4000 - (endtime - startTime));
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        mHandler.sendMessage(message);
+                    }
                 });
             }
         }).start();
@@ -223,15 +222,16 @@ public class SplashActivity extends AppCompatActivity {
 
     /**
      * 解析拿到的jsonObject对象
-     * @param jsonData    传入json返回的String
+     *
+     * @param jsonData 传入json返回的String
      */
     private int parseJsonObject(String jsonData) {
-        Gson gson= new Gson();
-        Update update=gson.fromJson(jsonData,Update.class);
-        Log.d(TAG, "parseJsonObject: "+update.getVersionDes());
-        Log.d(TAG, "parseJsonObject: "+update.getVersionName());
-        Log.d(TAG, "parseJsonObject: "+update.getVersionCode());
-        Log.d(TAG, "parseJsonObject: "+update.getDownloadUrl());
+        Gson gson = new Gson();
+        Update update = gson.fromJson(jsonData, Update.class);
+        Log.d(TAG, "parseJsonObject: " + update.getVersionDes());
+        Log.d(TAG, "parseJsonObject: " + update.getVersionName());
+        Log.d(TAG, "parseJsonObject: " + update.getVersionCode());
+        Log.d(TAG, "parseJsonObject: " + update.getDownloadUrl());
         des = update.getVersionDes();
         updateDownloadUrl = update.getDownloadUrl();
 
@@ -287,13 +287,13 @@ public class SplashActivity extends AppCompatActivity {
      */
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     void downNewApk() {
-      ToastUtils.showShort(SplashActivity.this,"正在下载.....");
+        ToastUtils.showShort(SplashActivity.this, "正在下载.....");
         //1.判断sd卡是否挂载
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-             //获得sd路径
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath()
-            + File.separator + "mobilesafe1.apk";//指定存储路径和存储的名称
-            String url =updateDownloadUrl;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            //获得sd路径
+            final String path = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + File.separator + "mobilesafe1.apk";//指定存储路径和存储的名称
+            String url = updateDownloadUrl;
             RequestParams params = new RequestParams(url);
             params.setSaveFilePath(path);
 //            params.setAutoRename(true);//自动把名字改成服务器上的app名称，会覆盖，但是一旦重复下载就会多出来。
@@ -303,16 +303,25 @@ public class SplashActivity extends AppCompatActivity {
                     Log.i(TAG, "onSuccess: ");
                     //获得的result就是下载获得的文件
                     //自动安装
-                    installApk(result);
+
+                    String path1 = result.getAbsolutePath();
+                    Log.d(TAG, "onSuccess: "+path1);
+                    setPermission(path1);
+                    installApk(SplashActivity.this, result);
+
+
                 }
+
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
 
                 }
+
                 @Override
                 public void onCancelled(CancelledException cex) {
 
                 }
+
                 @Override
                 public void onFinished() {
 
@@ -324,23 +333,48 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * @param file 待安装的文件
      */
-    private void installApk(File file ) {
-     //系统应用界面，看源码，分析，安装apk入口
-        Intent intent= new Intent("android.intent.action.VIEW");
-        intent.addCategory("android.intent.category.DEFAULT");
+    private void installApk(Context context, File file) {
+
+        String path1 = file.getAbsolutePath();
+        Log.d(TAG, "onSuccess: "+path1);
+        setPermission(path1);
+
+
+        //系统应用界面，看源码，分析，安装apk入口
+        Intent intent = new Intent("android.intent.action.VIEW");
+
+        //为这个新apk开启一个新的activity栈
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (Build.VERSION.SDK_INT >= 24) {
+
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Uri contentUri = FileProvider.getUriForFile(context, "site.yanhui.mobilesafe.fileprovider", file);
+            intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
+
+        } else {
+            intent.addCategory("android.intent.category.DEFAULT");
 //        intent.setData(Uri.fromFile(file));//得到数据源
 //        intent.setType("application/vnd.android.package-archive");
 
-        intent.setDataAndType(Uri.fromFile(file),"application/vnd.android.package-archive");
-        startActivityForResult(intent,0);
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+
+//            android.os.Process.killProcess(android.os.Process.myPid());
+
+        }
+        startActivityForResult(intent, 0);
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case 0 :
-                enterHome();
+            case 0:
+                if (resultCode==RESULT_CANCELED){
+                    enterHome();
+                }
+
                 break;
 
             default:
@@ -356,7 +390,8 @@ public class SplashActivity extends AppCompatActivity {
 
     /**
      * 给个理由啊
-     * @param request 继续发送申请
+     *
+     * @param request 继续发送请求
      */
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     void ShowRationale(final PermissionRequest request) {
@@ -389,6 +424,22 @@ public class SplashActivity extends AppCompatActivity {
     void NeverAsk() {
         Toast.makeText(this, "不再询问", Toast.LENGTH_SHORT).show();
         enterHome();
+    }
+
+    /**
+     * 提升读写权限
+     * @param filePath 文件路径
+     * @return
+     * @throws IOException
+     */
+    public  void setPermission(String filePath)  {
+        String command = "chmod " + "777" + " " + filePath;
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
