@@ -1,16 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="site.yanhui.mobilesafe.activity.HomeActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="50sp"
-        android:text="HomeActivity"/>
+        style="@style/TitleStyle"
+        android:text="功能列表"/>
 
-</android.support.constraint.ConstraintLayout>
+    <!-- android:ellipsize="end" 省略尾部   start省略头部  middle 省略中间-->
+    <!--移动字幕-->
+    <!--想要有移动字幕的效果必须使用一下三个属性-->
+    <!--android:ellipsize="marquee"-->
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true"-->
+    <!--android:marqueeRepeatLimit="marquee_forever" //一直滚动-->
+    <!--自定义控件达到滚动的效果（重写textview获取焦点就行了）-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+
+        android:marqueeRepeatLimit="marquee_forever"
+        android:padding="5dp"
+        android:singleLine="true"
+        android:text="Live for nothing or Die for something ,you  call."
+
+        android:textColor="#000"
+
+        />
+
+    <!--自定义了FocusTextView实现了可以一直获取焦点的功能-->
+    <!--所以之需要设置一下marquee就行了，之前的两行代码不必要了-->
+    <site.yanhui.mobilesafe.view.FocusTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:padding="5dp"
+        android:singleLine="true"
+        android:text="没有意义的活着，还是为了有意义的事情而奋斗终身，这完全取决于你自己。"
+        android:textColor="#000"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_function"
+        android:layout_marginTop="10dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </android.support.v7.widget.RecyclerView>
+
+
+</LinearLayout>

@@ -16,7 +16,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.animation.AlphaAnimation;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,27 +50,30 @@ import site.yanhui.mobilesafe.utils.ToastUtils;
 public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
+    //更新版本的状态码
     private static final int UPDATE_VERSION = 100;
+    //进入主界面的状态码
     private static final int ENTER_HOME = 101;
-    private TextView tv_versionName;
-    private int mVersionCode;
 
+    private TextView tv_versionName; //拿到TextView
+    private int mVersionCode;  //本地的版本号
+
+    private String des; //服务器得到的新版本描述
+    private String updateDownloadUrl; //新版本apk的下载地址
 
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case UPDATE_VERSION:
-                    showUpdateDialog();
+                    showUpdateDialog();//启动更新的对话框
                     break;
                 case ENTER_HOME:
-                    enterHome();
+                    enterHome(); //进入主界面
             }
         }
-
     };
-    private String des;
-    private String updateDownloadUrl;
+    private RelativeLayout rl_root;
 
     /**
      * 进入Home界面
@@ -87,7 +93,7 @@ public class SplashActivity extends AppCompatActivity {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setIcon(R.drawable.ic_launcher); //设置左上角图标
         alertDialog.setTitle("版本更新");
-        alertDialog.setMessage(des);
+        alertDialog.setMessage(des); //设置从服务器拿到的新版本描述
         alertDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -109,12 +115,11 @@ public class SplashActivity extends AppCompatActivity {
         alertDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-                enterHome();
-                dialog.dismiss();
+                enterHome();    //进入主界面
+                dialog.dismiss();//使得dialog消失
             }
         });
-        alertDialog.show();
-
+        alertDialog.show();//展现出dialog
     }
 
 
@@ -140,6 +145,18 @@ public class SplashActivity extends AppCompatActivity {
 
         initUI();
         initData();
+        //初始化动画
+        initAnimation();
+    }
+
+    /**
+     * 设置一个深入浅出的东西
+     */
+    private void initAnimation() {
+        AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
+        alphaAnimation.setDuration(3000);//设置动画时长
+        rl_root.startAnimation(alphaAnimation);
+
     }
 
     /**
@@ -173,7 +190,9 @@ public class SplashActivity extends AppCompatActivity {
                 //进行耗时操作必须开启一个新的子线程，不然会造成ANR异常
                 final long startTime = System.currentTimeMillis(); //开始的时间戳
                 final Message message = Message.obtain(); //初始化message对象
-                String address = "http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json";//版本更新的json数据
+                //http://ogtmd8elu.bkt.clouddn.com/MobilesafeUpdate.json
+                //我换上的是错误的adress，因为后续开发不需要更新。
+                String address = "http://ogtmd8elu.bkt.clouddn.com/wrong";//版本更新的json数据
                 HttpUtils.sendOkHttpRequest(address, new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -196,23 +215,40 @@ public class SplashActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
+
                         String jsonResponseText = response.body().string();//将返回的response对象转化成String
                         Log.d(TAG, "onResponse: " + jsonResponseText);
+
                         int versionCloudCode = parseJsonObject(jsonResponseText);//解析json返回服务器上最新版本值
-                        if (mVersionCode < versionCloudCode) {//本地的小于服务器的
-                            message.what = UPDATE_VERSION;  //给message一个消息，更新版本
-                        } else {
-                            message.what = ENTER_HOME;  //进入主页面
-                        }
-                        long endtime = System.currentTimeMillis();
-                        if (endtime - startTime < 4000) { //保证执行4s，体验好
-                            try {
-                                Thread.sleep(4000 - (endtime - startTime));
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                        /*
+                        如果返回为0说明，json解析失败，Url出问题 ，切换到主线程弹出土司
+                        否则的话，一切正常，更新数据即可。
+                         */
+
+                        if (versionCloudCode==0){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                 ToastUtils.showLong(SplashActivity.this,"address地址出错获取更新json失败");
+                                }
+                            });
+                        }else {
+
+                            if (mVersionCode < versionCloudCode) {//本地的小于服务器的
+                                message.what = UPDATE_VERSION;  //给message一个消息，更新版本
+                            } else {
+                                message.what = ENTER_HOME;  //进入主页面
                             }
+                            long endtime = System.currentTimeMillis();
+                            if (endtime - startTime < 4000) { //保证执行4s，体验好
+                                try {
+                                    Thread.sleep(4000 - (endtime - startTime));
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            mHandler.sendMessage(message);//发送消息
                         }
-                        mHandler.sendMessage(message);//发送消息
                     }
                 });
             }
@@ -224,17 +260,31 @@ public class SplashActivity extends AppCompatActivity {
      * @param jsonData 传入json返回的String
      */
     private int parseJsonObject(String jsonData) {
-        Gson gson = new Gson();
-        Update update = gson.fromJson(jsonData, Update.class);
-        Log.d(TAG, "parseJsonObject: " + update.getVersionDes());
-        Log.d(TAG, "parseJsonObject: " + update.getVersionName());
-        Log.d(TAG, "parseJsonObject: " + update.getVersionCode());
-        Log.d(TAG, "parseJsonObject: " + update.getDownloadUrl());
-        des = update.getVersionDes();
-        updateDownloadUrl = update.getDownloadUrl();
 
-        return Integer.parseInt(update.getVersionCode());
 
+            Gson gson = new Gson();
+            Update update = gson.fromJson(jsonData, Update.class);
+            Log.d(TAG, "parseJsonObject: " + update.getVersionDes());
+            Log.d(TAG, "parseJsonObject: " + update.getVersionName());
+            Log.d(TAG, "parseJsonObject: " + update.getVersionCode());
+            Log.d(TAG, "parseJsonObject: " + update.getDownloadUrl());
+
+
+            des = update.getVersionDes();
+            updateDownloadUrl = update.getDownloadUrl();
+        //判断des和updateDownloadUrl是否为空，用TextUtils进行判断
+        if (!TextUtils.isEmpty(des)&&!TextUtils.isEmpty(updateDownloadUrl)){
+            return Integer.parseInt(update.getVersionCode());//不为空就返回从服务器上取得的值
+        }else {
+            try {
+                Thread.sleep(3000); //睡3s体验好
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            enterHome();//为空的话（json url出错）睡三秒 直接进入 主界面
+        }
+        return  0;//返回0 回去做判断
     }
 
         /**
@@ -278,6 +328,7 @@ public class SplashActivity extends AppCompatActivity {
      */
     private void initUI() {
         tv_versionName = (TextView) findViewById(R.id.version_name);
+        rl_root = (RelativeLayout) findViewById(R.id.rl_root);
     }
 
     /*
@@ -292,23 +343,21 @@ public class SplashActivity extends AppCompatActivity {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             //获得sd路径
             final String path = Environment.getExternalStorageDirectory().getAbsolutePath()
-                    + File.separator + "mobilesafe1.apk";//指定存储路径和存储的名称
-            String url = updateDownloadUrl;
-            RequestParams params = new RequestParams(url);
-            params.setSaveFilePath(path);
+                    + File.separator + "mobilesafe1.apk";//指定存储路径（sd存储绝对路径）和存储的名称
+            String url = updateDownloadUrl; //将服务器上获得下载新apk的url赋值给url进行发起请求
+            RequestParams params = new RequestParams(url);//封装成param
+            params.setSaveFilePath(path);//设置存储下载文件的位置
 //            params.setAutoRename(true);//自动把名字改成服务器上的app名称，会覆盖，但是一旦重复下载就会多出来。
             x.http().post(params, new org.xutils.common.Callback.CommonCallback<File>() {
                 @Override
                 public void onSuccess(File result) {
                     Log.i(TAG, "onSuccess: ");
                     //获得的result就是下载获得的文件
-                    //自动安装
-
+                    //提升权限
                     String path1 = result.getAbsolutePath();
                     Log.d(TAG, "onSuccess: "+path1);
                     setPermission(path1);
                     installApk(SplashActivity.this, result);
-
 
                 }
 

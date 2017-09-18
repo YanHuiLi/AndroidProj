@@ -2,7 +2,16 @@
     "android_gradle_plugin_version": "2.3.3",
     "apk_path": "E:\\05MyProj\\Mobilesafe\\app\\build\\outputs\\apk\\app-debug.apk",
     "apt": {
-        
+        "app": {
+            "aptArgs": [
+                
+            ],
+            "aptOutput": "E:\\05MyProj\\Mobilesafe\\app\\build\\generated\\source\\apt\\debug",
+            "disableDiscovery": false,
+            "enabled": true,
+            "processor": null,
+            "processorPath": "D:\\Android_avd\\.android\\build-cache\\73e8beebef1dd1367d7d7c0b470ee49fa4b12d4f\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\ff68fcc80dfdb056a3136aec6494d0d0a48ce77a\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\91bea4fe6d672f9b6554201eff246d7fb6b85d91\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\c76e8653edacb668055ecbb55d113b427b04b421\\output\\jars\\classes.jar;E:\\adt-bundle-windows-x86_64-20140702\\sdk\\extras\\m2repository\\com\\android\\support\\constraint\\constraint-layout-solver\\1.0.2\\constraint-layout-solver-1.0.2.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\com.squareup.okhttp3\\okhttp\\3.4.1\\c7c4f9e35c2fd5900da24f9872e3971801f08ce0\\okhttp-3.4.1.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\com.squareup.okio\\okio\\1.9.0\\f824591a0016efbaeddb8300bee54832a1398cfa\\okio-1.9.0.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\com.google.code.gson\\gson\\2.7\\751f548c85fa49f330cecbb1875893f971b33c4e\\gson-2.7.jar;D:\\Android_avd\\.android\\build-cache\\6b3bf8ecd12303554ce65b0936bcc07670eced81\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\b1d94e3a6255f53559a75b729e47e77a06690e7f\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\a7afc0d0908fe0f02c0234dcfd0bd02160e86431\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\3ba1d27567e9cc994269f2a7fa74bcdebc444cd0\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\50a2629dad6dbeed7d61bf5ad50e38599443e2ae\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\9f95d0998f0a2b5825c03247a4aaa4c4fd3abe41\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\b09a9a9bec02c5d6d16b393247b7143419a5213a\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\2b0844e7ecd9f3a77bc0399302764f9fd42fc970\\output\\jars\\classes.jar;D:\\Android_avd\\.android\\build-cache\\6b2371a88d8da37974ddd8499bc19b4e7adb997c\\output\\jars\\classes.jar;E:\\adt-bundle-windows-x86_64-20140702\\sdk\\extras\\android\\m2repository\\com\\android\\support\\support-annotations\\25.3.1\\support-annotations-25.3.1.jar;D:\\Android_avd\\.android\\build-cache\\3fb40264b49dc0c5775daa8f9e631ef45f62ec78\\output\\jars\\classes.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\com.github.hotchemi\\permissionsdispatcher-processor\\2.4.0\\82f370ed8578257db6468af6190f26c3d07049b\\permissionsdispatcher-processor-2.4.0.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\org.jetbrains.kotlin\\kotlin-stdlib\\1.1.1\\98e484e67f913e934559f7f55f0c94be5593f03c\\kotlin-stdlib-1.1.1.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\com.squareup\\javapoet\\1.7.0\\4fdcf1fc27c1a8f55d1109df986c923152f07759\\javapoet-1.7.0.jar;C:\\Users\\Archer\\.gradle\\caches\\modules-2\\files-2.1\\org.jetbrains\\annotations\\13.0\\919f0dfe192fb4e063e7dacadee7f8bb9a2672a9\\annotations-13.0.jar"
+        }
     },
     "apt_libraries": {
         "dagger": false,
@@ -13,13 +22,13 @@
     "build_directory": "E:\\05MyProj\\Mobilesafe\\app\\build",
     "build_script": "gradlew.bat :app:assembleDebug",
     "build_script_work_directory": "",
-    "build_tools_directory": "E:\\adt-bundle-windows-x86_64-20140702\\sdk\\build-tools\\26.0.1",
-    "build_tools_version": "26.0.1",
+    "build_tools_directory": "E:\\adt-bundle-windows-x86_64-20140702\\sdk\\build-tools\\25.0.0",
+    "build_tools_version": "25.0.0",
     "check_sources_md5": [
         
     ],
-    "compile_sdk_directory": "E:\\adt-bundle-windows-x86_64-20140702\\sdk\\platforms\\android-26",
-    "compile_sdk_version": "android-26",
+    "compile_sdk_directory": "E:\\adt-bundle-windows-x86_64-20140702\\sdk\\platforms\\android-25",
+    "compile_sdk_version": "android-25",
     "databinding": [
         
     ],
