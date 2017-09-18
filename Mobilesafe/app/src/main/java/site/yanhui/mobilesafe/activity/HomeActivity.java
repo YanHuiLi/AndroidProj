@@ -1,9 +1,11 @@
 package site.yanhui.mobilesafe.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import site.yanhui.mobilesafe.R;
 import site.yanhui.mobilesafe.bean.FunctionBean;
 import site.yanhui.mobilesafe.other.SpaceItemDecoration;
 import site.yanhui.mobilesafe.utils.AppManagerUtils;
+import site.yanhui.mobilesafe.utils.ToastUtils;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -33,20 +36,42 @@ public class HomeActivity extends AppCompatActivity {
         //初始化组件
         initUI();
 
-        //1.网格布局管理器，三列的
+//        1.网格布局管理器，三列的
         GridLayoutManager gridLayoutManager= new GridLayoutManager(HomeActivity.this,3);
 //        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
 
-        //2.设置网格布局管理器
+//        2.设置网格布局管理器
         rv_function.setLayoutManager(gridLayoutManager);
-        //3.添加边距
+//        3.添加边距
         rv_function.addItemDecoration(new SpaceItemDecoration(3,50,false));//
-        //4.初始化适配器
+//        4.初始化适配器
         mAdapter = new FunctionAdapter(functionBeanList);
-        //设置是适配器
+        mAdapter.setOnItemClickLitener(new FunctionAdapter.OnItemClicklistener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                switch (position) {
+
+                    case 0:
+                        ToastUtils.showShort(HomeActivity.this,"点击了手机防盗");
+                        break;
+                    case 8:
+                        Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                //没使用这个方法
+            }
+        });
+//        设置是适配器
         rv_function.setAdapter(mAdapter);
 
-        //注册单个条目的点击时间
+
 
     }
 
@@ -88,7 +113,9 @@ public class HomeActivity extends AppCompatActivity {
      * 初始化组件
      */
     private void initUI() {
-        rv_function = (RecyclerView) findViewById(R.id.rv_function);
+        rv_function = (RecyclerView) findViewById(R.id.rv_function);//因为无法实现点击事件而搁浅了
+
+
     }
 
     @Override

@@ -1,5 +1,6 @@
 package site.yanhui.mobilesafe.Adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +27,33 @@ import site.yanhui.mobilesafe.bean.FunctionBean;
 public class FunctionAdapter extends RecyclerView.Adapter<FunctionAdapter.ViewHolder> {
 
 
+
     private List<FunctionBean> mFunctionList;
+
+    /**
+     * 自己定义一个接口,用与根view的监听事件
+     * http://blog.csdn.net/lmj623565791/article/details/45059587
+     */
+    public interface OnItemClicklistener
+    {
+        void onItemClick(View view, int position);
+        void onItemLongClick(View view , int position);
+    }
+
+    private OnItemClicklistener mOnItemClicklistener;
+
+    public void setOnItemClickLitener(OnItemClicklistener mOnItemClicklistener)
+    {
+        this.mOnItemClicklistener = mOnItemClicklistener;
+    }
+
 
     //1.自己写的内部类ViewHolder
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView iv_icon;
         TextView tv_title;
-
+        private Context mContext;
 
         /**
          * 用这个内部类ViewHolder 获得缓存的相关组件
@@ -45,7 +65,9 @@ public class FunctionAdapter extends RecyclerView.Adapter<FunctionAdapter.ViewHo
             iv_icon = (ImageView) itemView.findViewById(R.id.iv_icon);
             tv_title = (TextView) itemView.findViewById(R.id.tv_title);
         }
+
     }
+
 
     /**
      * @param mFunctionList 要求传入一个带有funtionBean的List
@@ -75,11 +97,35 @@ public class FunctionAdapter extends RecyclerView.Adapter<FunctionAdapter.ViewHo
      * @param position 具体的实例位置
      */
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         FunctionBean functionBean = mFunctionList.get(position);//拿到具体的实例
         holder.iv_icon.setImageResource(functionBean.getImageId());
         holder.tv_title.setText(functionBean.getName());
+
+        //绑定的时候,进行监听,设置图标和文字的监听
+        if (mOnItemClicklistener != null) {
+            holder.iv_icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    mOnItemClicklistener.onItemClick(holder.itemView, pos);
+                }
+            });
+
+            holder.tv_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = holder.getLayoutPosition();
+                    mOnItemClicklistener.onItemClick(holder.itemView, pos);
+                }
+            });
+
+
+
+        }
     }
+
+
 
     @Override
     public int getItemCount() {

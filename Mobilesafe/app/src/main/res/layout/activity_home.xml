@@ -59,5 +59,13 @@
         android:layout_height="match_parent">
     </android.support.v7.widget.RecyclerView>
 
+    <!--android:numColumns="3" 指定列的数量-->
+
+    <!--<GridView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/gv_home"-->
+        <!--android:numColumns="3"/>-->
+
 
 </LinearLayout>
