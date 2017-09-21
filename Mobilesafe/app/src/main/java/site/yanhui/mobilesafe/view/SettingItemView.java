@@ -58,7 +58,18 @@ public class SettingItemView extends LinearLayout{
         tv_setting_des = (TextView) this.findViewById(R.id.tv_setting_des);
         setting_ck_box = (CheckBox) this.findViewById(R.id.setting_ck_box);
 
+        //获取自定义以及原生属性的操作
+        initAttrs(attrs);
 //        setting_ck_box.isChecked();//判断是否选中，选中返回true
+
+    }
+
+    /**
+     * 拿到自定义方法中的自定义属性
+     * @param set  构造方法中维护好的属性自合
+     */
+    private void initAttrs(AttributeSet set) {
+
     }
 
     /**
