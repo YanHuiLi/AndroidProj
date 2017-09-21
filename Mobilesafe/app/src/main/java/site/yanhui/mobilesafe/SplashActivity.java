@@ -42,8 +42,10 @@ import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
 import site.yanhui.mobilesafe.activity.HomeActivity;
 import site.yanhui.mobilesafe.gson.Update;
+import site.yanhui.mobilesafe.other.ConstantValue;
 import site.yanhui.mobilesafe.utils.AppManagerUtils;
 import site.yanhui.mobilesafe.utils.HttpUtils;
+import site.yanhui.mobilesafe.utils.SpUtils;
 import site.yanhui.mobilesafe.utils.ToastUtils;
 
 @RuntimePermissions
@@ -156,7 +158,6 @@ public class SplashActivity extends AppCompatActivity {
         AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
         alphaAnimation.setDuration(3000);//设置动画时长
         rl_root.startAnimation(alphaAnimation);
-
     }
 
     /**
@@ -179,7 +180,15 @@ public class SplashActivity extends AppCompatActivity {
 //        "versionCode":"2"
 //        "versionDes":"2.0版本发布了，狂拽酷炫吊炸天"
 //        "downloadUrl":"http://yanhui.site"（替换成下载地址）
-        checkVersion();
+        if (SpUtils.getBoolean(this, ConstantValue.OPEN_UPDATE,false)) {
+            checkVersion();
+        }else {
+            //直接更新 enterHome()方法 体验会很差，因为跳转很快
+            //但是又不能使用thead.sleep方法，因为会造成主线程阻塞
+            //所以还是只能使用handler.mHandler.sendEmptyMessageDelayed。
+            //发完消息，延时3s去处理，注意看构造。
+           mHandler.sendEmptyMessageDelayed(ENTER_HOME,3000);
+        }
     }
 
     /**
