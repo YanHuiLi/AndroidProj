@@ -2,6 +2,7 @@ package site.yanhui.mobilesafe.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -20,8 +21,16 @@ import site.yanhui.mobilesafe.R;
 
 public class SettingItemView extends LinearLayout{
 
+    private static final String TAG = "SettingItemView";
+    private  static  final  String  NAMESPACE = "http://schemas.android.com/apk/res/site.yanhui.mobilesafe";
     private CheckBox setting_ck_box;
     private TextView tv_setting_des;
+
+
+    private String mDesTitle;
+    private String mDesOn;
+    private String mDesOff;
+    private TextView tv_setting_title;
 
     public SettingItemView(Context context) {
         this(context,null);//调用第二个构造
@@ -54,12 +63,16 @@ public class SettingItemView extends LinearLayout{
 //         this.addView(view);//还是加入进去，不然无法显示
 
         //执行完inflate代码以后就可以找到控件，复用了
-        TextView tv_setting_title = (TextView) this.findViewById(R.id.tv_setting_title);
+        tv_setting_title = (TextView) this.findViewById(R.id.tv_setting_title);
         tv_setting_des = (TextView) this.findViewById(R.id.tv_setting_des);
         setting_ck_box = (CheckBox) this.findViewById(R.id.setting_ck_box);
 
-        //获取自定义以及原生属性的操作
+        //1 获取自定义以及原生属性的操作
         initAttrs(attrs);
+        //2 初始化完成了以后才可以赋值,获取标题
+        tv_setting_title.setText(mDesTitle);
+
+
 //        setting_ck_box.isChecked();//判断是否选中，选中返回true
 
     }
@@ -70,7 +83,25 @@ public class SettingItemView extends LinearLayout{
      */
     private void initAttrs(AttributeSet set) {
 
-    }
+        //获取属性的总个数
+        Log.i(TAG, "initAttrs: "+set.getAttributeCount());
+        //获取所有属性名称和属性值
+//        for (int i = 0; i < set.getAttributeCount(); i++) {
+//            //id拿到的是在R中的索引值
+//            Log.i(TAG, "initAttrs: name is "+  set.getAttributeName(i));
+//            Log.i(TAG, "initAttrs:  value is "+  set.getAttributeValue(i));
+//            Log.i(TAG, "initAttrs: =================================");
+
+
+        mDesTitle = set.getAttributeValue(NAMESPACE, "desTitle");
+        mDesOn = set.getAttributeValue(NAMESPACE, "desOn");
+        mDesOff = set.getAttributeValue(NAMESPACE, "desOff");
+        Log.i(TAG, "initAttrs: desTitle " + mDesTitle);
+        Log.i(TAG, "initAttrs: desOn " + mDesOn);
+        Log.i(TAG, "initAttrs: desOff " + mDesOff);
+        }
+
+
 
     /**
      *判断checkBox的选中状态来决定SettingItemView的选中状态
@@ -87,9 +118,9 @@ public class SettingItemView extends LinearLayout{
         //当前条目在选中的过程中，setting_ck_box跟随变化
         setting_ck_box.setChecked(isCheck);
         if (isCheck){
-            tv_setting_des.setText("自动更新已经开启");
+            tv_setting_des.setText(mDesOn);
         }else {
-            tv_setting_des.setText("自动更新已经关闭");
+            tv_setting_des.setText(mDesOff);
         }
     }
 }

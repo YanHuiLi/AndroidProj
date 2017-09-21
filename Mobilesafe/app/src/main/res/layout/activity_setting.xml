@@ -15,20 +15,25 @@
     <!--看TextView源码的做法，为了能够更好的复用（因为每个item和标题和描述显示的都不一样）-->
     <!--sdk->platforms->android25->data->res->values->attrs.xml->（找到textView）textView-->
     <!--SettingItemView自定义的属性-->
+    <!--6个自定义属性-->
     <site.yanhui.mobilesafe.view.SettingItemView
         xmlns:mobilesafe="http://schemas.android.com/apk/res/site.yanhui.mobilesafe"
         android:id="@+id/siv_update"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:desTitle="自动更新设置"
-        app:desOff="自动更新已经关闭"
-        app:desOn="自动更新已经开启"/>
+        mobilesafe:desTitle="自动更新设置"
+        mobilesafe:desOff="自动更新已经关闭"
+        mobilesafe:desOn="自动更新已经开启"/>
 
 
     <site.yanhui.mobilesafe.view.SettingItemView
+        xmlns:mobilesafe="http://schemas.android.com/apk/res/site.yanhui.mobilesafe"
         android:id="@+id/s"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        mobilesafe:desTitle="电话归属地的显示设置"
+        mobilesafe:desOff="归属地显示已经关闭"
+        mobilesafe:desOn="归属地显示已经开启"/>
 
 
     <!--将已经编写好的布局文件抽取到一个类中做管理，下次还需要使用的时候，直接使用即可-->
