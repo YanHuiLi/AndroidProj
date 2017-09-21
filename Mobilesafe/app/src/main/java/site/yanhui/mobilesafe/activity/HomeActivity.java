@@ -2,10 +2,14 @@ package site.yanhui.mobilesafe.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +17,10 @@ import java.util.List;
 import site.yanhui.mobilesafe.Adapter.FunctionAdapter;
 import site.yanhui.mobilesafe.R;
 import site.yanhui.mobilesafe.bean.FunctionBean;
+import site.yanhui.mobilesafe.other.ConstantValue;
 import site.yanhui.mobilesafe.other.SpaceItemDecoration;
 import site.yanhui.mobilesafe.utils.AppManagerUtils;
+import site.yanhui.mobilesafe.utils.SpUtils;
 import site.yanhui.mobilesafe.utils.ToastUtils;
 
 public class HomeActivity extends AppCompatActivity {
@@ -53,6 +59,7 @@ public class HomeActivity extends AppCompatActivity {
 
                     case 0:
                         ToastUtils.showShort(HomeActivity.this,"点击了手机防盗");
+                        showDialog();
                         break;
                     case 8:
                         Intent intent = new Intent(HomeActivity.this, SettingActivity.class);
@@ -70,8 +77,80 @@ public class HomeActivity extends AppCompatActivity {
         });
 //        设置是适配器
         rv_function.setAdapter(mAdapter);
+    }
 
 
+    private void showDialog() {
+        //判断本地是否有密码
+        String psd = SpUtils.getString(this, ConstantValue.MOBILE_SAFE_PSD, "");
+        //1.初始设置的密码对话款
+        if (TextUtils.isEmpty(psd)) {
+           showSetPsdDialog();
+        }
+        else{
+        //2.确认密码的对话款
+            showConfirmPsdDialog();
+        }
+
+    }
+
+
+    private void showConfirmPsdDialog() {
+    }
+
+    /**
+     * 初次设置对话框
+     */
+    private void showSetPsdDialog() {
+        //自己定义对话框的展示样式
+        final AlertDialog.Builder mSetPsdDialog= new AlertDialog.Builder(this);
+        //实例化自己的alertdialog
+        final AlertDialog mAlertDialog = mSetPsdDialog.create();
+        //xml——》view 不需要挂载，所以填写null
+        final View view = View.inflate(this, R.layout.dialog_set_password, null);
+       //得到的view放置到mSetPsdDialog
+        mAlertDialog.setView(view);
+
+        //展示相关的mSetPsdDialog
+        mAlertDialog.show();
+        //拿到相关的组件
+        Button  btn_submit = (Button) view.findViewById(R.id.btn_submit);
+        Button  btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAlertDialog.dismiss();
+            }
+        });
+       btn_submit.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               //拿到控件
+               EditText  confirm_psd= (EditText) view.findViewById(R.id.et_confirm_psd);
+               EditText et_psd = (EditText) view.findViewById(R.id.et_psd);
+             //得到控件的字符串，密码
+               String psdText = confirm_psd.getText().toString().trim();
+               String confirm_psdText = et_psd.getText().toString().trim();
+
+               //如果两个et拿到的数值不为空的话
+               if (!TextUtils.isEmpty(psdText)&&!TextUtils.isEmpty(confirm_psdText)) {
+                   //两个数值相等
+                   if (psdText.equals(confirm_psdText)) {
+                       //跳装到设置界面
+                       Intent intent = new Intent(HomeActivity.this, SetupActivity.class);
+                       startActivity(intent);
+                       mAlertDialog.dismiss();
+                   }else {
+                       //否则说明密码不相同
+                       ToastUtils.showShort(HomeActivity.this,"两次输入的密码必须相同");
+                   }
+               }else {
+                   //密码为空
+                   ToastUtils.showShort(HomeActivity.this,"输入密码不能为空");
+               }
+
+           }
+       });
 
     }
 

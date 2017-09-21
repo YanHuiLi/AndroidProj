@@ -13,4 +13,8 @@ public class ConstantValue {
      * 用于读取，是否启动自动更新的节点
      */
     public static  final String OPEN_UPDATE = "open_date";
+    /**
+     * 是否设置密码
+     */
+    public static final String MOBILE_SAFE_PSD = "mobile_safe_psd";
 }
