@@ -57,9 +57,9 @@ public class SplashActivity extends AppCompatActivity {
 
     private TextView tv_versionName; //拿到TextView
     private int mVersionCode;  //本地的版本号
-
     private String des; //服务器得到的新版本描述
     private String updateDownloadUrl; //新版本apk的下载地址
+    private RelativeLayout rl_root;//启动界面的根布局ID 用于启动动画。
 
     private Handler mHandler = new Handler() {
         @Override
@@ -73,7 +73,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         }
     };
-    private RelativeLayout rl_root;
+
 
     /**
      * 进入Home界面
