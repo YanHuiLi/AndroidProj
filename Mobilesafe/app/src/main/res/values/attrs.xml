@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--给自定义的组合空间，设置标题和名称的属性-->
+<!--sdk->platforms->android25->data->res->values->attrs.xml->（找到textView）textView-->
+<resources>
+    <declare-styleable name="SettingItemView">
+        <attr name="desTitle" format="string"/>
+        <attr name="desOn" format="string"/>
+        <attr name="desOff" format="string"/>
+    </declare-styleable>
+</resources>

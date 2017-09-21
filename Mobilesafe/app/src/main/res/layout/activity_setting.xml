@@ -11,6 +11,9 @@
         android:text="设置中心"
         style="@style/TitleStyle"/>
 
+    <!--SettingItemView需要在构建布局的时候，实现自己写入标题等如荣-->
+    <!--看TextView源码的做法，为了能够更好的复用（因为每个item和标题和描述显示的都不一样）-->
+    <!--sdk->platforms->android25->data->res->values->attrs.xml->（找到textView）textView-->
     <site.yanhui.mobilesafe.view.SettingItemView
         android:id="@+id/siv_update"
         android:layout_width="match_parent"
