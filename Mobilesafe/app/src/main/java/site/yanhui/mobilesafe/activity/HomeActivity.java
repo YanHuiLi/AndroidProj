@@ -29,6 +29,7 @@ public class HomeActivity extends AppCompatActivity {
     private RecyclerView rv_function;
     private List<FunctionBean> functionBeanList=new ArrayList<>();
     public FunctionAdapter mAdapter;
+    private String psd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +59,6 @@ public class HomeActivity extends AppCompatActivity {
                 switch (position) {
 
                     case 0:
-                        ToastUtils.showShort(HomeActivity.this,"点击了手机防盗");
                         showDialog();
                         break;
                     case 8:
@@ -82,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void showDialog() {
         //判断本地是否有密码
-        String psd = SpUtils.getString(this, ConstantValue.MOBILE_SAFE_PSD, "");
+        psd = SpUtils.getString(this, ConstantValue.MOBILE_SAFE_PSD, "");
         //1.初始设置的密码对话款
         if (TextUtils.isEmpty(psd)) {
            showSetPsdDialog();
@@ -94,8 +94,51 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * 如果有密码了，就走确认的逻辑
+     * 因为在mAlertDialog存储了第一次设置的密码
+     */
     private void showConfirmPsdDialog() {
+        //得到alertDialog的实例
+        //1，使用的builder对象的.create()方法来构造的
+        AlertDialog.Builder alertDialogBuilder =new AlertDialog.Builder(this);
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+       //xml->转inflate
+        View inflate = View.inflate(HomeActivity.this, R.layout.dialog_confirm_password, null);
+        alertDialog.setView(inflate);
+        //拿到组件
+        final EditText et_input_psd = (EditText) inflate.findViewById(R.id.et_input_psd);
+        Button btn_confirm_submit = (Button) inflate.findViewById(R.id.btn_confirm_submit);
+        Button btn_confirm_cancel = (Button) inflate.findViewById(R.id.btn_confirm_cancel);
+       //show出来
+        alertDialog.show();
+
+        //点击取消的时候，设置监听事件
+        btn_confirm_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /**
+                 * 只有dialog才可以取消的方法
+                 */
+                alertDialog.dismiss();
+            }
+        });
+
+        //点击确定的时候，跳装到setUpActivity
+        btn_confirm_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String etInputPsd = et_input_psd.getText().toString().trim();
+                if (etInputPsd.equals(psd)) {
+                    Intent intent = new Intent(HomeActivity.this, SetupActivity.class);
+                    startActivity(intent);
+                    alertDialog.dismiss();
+                }else {
+                    ToastUtils.showShort(getApplicationContext(),"输入的密码有误，请重新输入");
+                    et_input_psd.setText("");
+                }
+            }
+        });
     }
 
     /**
@@ -140,6 +183,9 @@ public class HomeActivity extends AppCompatActivity {
                        Intent intent = new Intent(HomeActivity.this, SetupActivity.class);
                        startActivity(intent);
                        mAlertDialog.dismiss();
+
+                    //存储密码密码到配置文件
+                       SpUtils.putString(getApplicationContext(),ConstantValue.MOBILE_SAFE_PSD,psdText);
                    }else {
                        //否则说明密码不相同
                        ToastUtils.showShort(HomeActivity.this,"两次输入的密码必须相同");
