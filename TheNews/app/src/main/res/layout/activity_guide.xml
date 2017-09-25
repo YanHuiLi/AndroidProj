@@ -18,7 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="90dp"
+        android:textColor="@drawable/btn_splash_guide_text_selector"
+        android:background="@drawable/btn_splash_guide_background_selector"
+        android:visibility="invisible"
         android:text="开始体验"/>
 
     <RelativeLayout

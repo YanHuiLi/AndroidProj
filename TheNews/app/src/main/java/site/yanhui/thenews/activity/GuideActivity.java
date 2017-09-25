@@ -1,10 +1,12 @@
 package site.yanhui.thenews.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,6 +20,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import site.yanhui.thenews.R;
 import site.yanhui.thenews.adapter.GuideViewpagerAdapter;
+import site.yanhui.thenews.others.ConstantValues;
+import site.yanhui.thenews.utils.SpUtils;
 
 /**
  * create at 2017/9/24 by 17:10
@@ -61,12 +65,12 @@ public class GuideActivity extends AppCompatActivity {
 
                 //当页面滑动的过程中回调
                 Log.d(TAG, "onPageSelected: 当前位置" +
-                        position+"百分比"+positionOffset );
+                        position + "百分比" + positionOffset);
                 //计算拿到的距离，总距离乘上百分比，再加上当前的position*一个距离的mPointInstance。
-                int marginLeft = (int) (mPointInstance * positionOffset)+position*mPointInstance;//计算距离
+                int marginLeft = (int) (mPointInstance * positionOffset) + position * mPointInstance;//计算距离
                 //首先拿到
                 RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mSplashRedPoint.getLayoutParams();
-                params.leftMargin=marginLeft;//得到的距离设置给mSplashRedPoint控件
+                params.leftMargin = marginLeft;//得到的距离设置给mSplashRedPoint控件
 
                 mSplashRedPoint.setLayoutParams(params);//不要忘记了吧参数设置给layoutParams
 
@@ -75,12 +79,18 @@ public class GuideActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 //某个页面被选中
+                if (position==imageViewArrayList.size()-1) {
+                    btnSplashButton.setVisibility(View.VISIBLE);
+                }else {
+                    btnSplashButton.setVisibility(View.INVISIBLE);
+
+                }
 
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-               //页面状态发生变化
+                //页面状态发生变化
             }
         });
 
@@ -91,15 +101,15 @@ public class GuideActivity extends AppCompatActivity {
 //        Log.d(TAG, "圆点间的距离 "+mPointInstance);
 
         //监听layout方法事件，位置确定以后，在获取圆点的距离，layout执行完毕，通过回调函数拿到位置
- mSplashRedPoint.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-     @Override
-     public void onGlobalLayout() {
-         //移除监听器，避免重复监听
-         mSplashRedPoint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-         mPointInstance = llSplashContainer.getChildAt(1).getLeft() - llSplashContainer.getChildAt(0).getLeft();
-         Log.d(TAG, "圆点间的距离 "+mPointInstance);
-     }
- });
+        mSplashRedPoint.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                //移除监听器，避免重复监听
+                mSplashRedPoint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mPointInstance = llSplashContainer.getChildAt(1).getLeft() - llSplashContainer.getChildAt(0).getLeft();
+                Log.d(TAG, "圆点间的距离 " + mPointInstance);
+            }
+        });
 
     }
 
@@ -131,7 +141,7 @@ public class GuideActivity extends AppCompatActivity {
 
             if (i > 0) {
                 //从第二个点设置左边距
-                params.leftMargin = 10;
+                params.leftMargin = 30;
             }
 
             point.setLayoutParams(params);//将参数设置给布局
@@ -144,6 +154,10 @@ public class GuideActivity extends AppCompatActivity {
     //点击事件
     @OnClick(R.id.btn_splash_button)
     public void onViewClicked() {
+        //当点击了开始体验的按钮的时候，说明已经是引导页面结束了，把firstcome常量设置成为false
+        SpUtils.putBoolean(getApplicationContext(), ConstantValues.FIRST_COME,false);
+        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+        startActivity(intent);
     }
 
 }
