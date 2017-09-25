@@ -26,7 +26,7 @@ public class MainActivity extends SlidingFragmentActivity {
         SlidingMenu slidingMenu=getSlidingMenu();
         //全部可以使用
         slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
-        slidingMenu.setBehindOffset(200);//预留200像素
+        slidingMenu.setBehindOffset(800);//设置屏幕的预留800像素，拉开菜单以后,屏幕还有800像素
 
 
     }
