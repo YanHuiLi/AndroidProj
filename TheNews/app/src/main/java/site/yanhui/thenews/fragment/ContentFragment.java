@@ -12,10 +12,10 @@ import site.yanhui.thenews.R;
 
 public class ContentFragment extends BaseFragment {
     @Override
-    public View initData() {
+    public void initData() {
 
 
-        return null;
+
     }
 
     @Override

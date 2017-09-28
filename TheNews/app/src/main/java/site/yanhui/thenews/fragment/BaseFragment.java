@@ -46,7 +46,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     //初始化数据
-    public abstract View initData();
+    public abstract void initData();
 
     //初始化布局，必须由子类实现,多态机制决定了，调用子类实现的子类
     public abstract View initView();

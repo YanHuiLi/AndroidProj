@@ -21,7 +21,7 @@ import site.yanhui.thenews.fragment.LeftMenuFragment;
 public class MainActivity extends SlidingFragmentActivity {
 
 
-    private static final String TAG_LEFT_MENU = "TAG_LEFT_MENU";
+    private static final String TAG_LEFT_MENU = "TAG_LEFT_MENU"; //fragment的tag
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
